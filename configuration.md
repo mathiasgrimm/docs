@@ -184,6 +184,21 @@ When decrypting environment files, Laravel automatically detects which format wa
 > [!NOTE]
 > When using the `--readable` option, comments, and blank lines from the original environment file are not included in the encrypted output.
 
+<a name="incremental-encryption"></a>
+#### Incremental Encryption
+
+To update a readable encrypted environment file without re-encrypting unchanged values, use the `--incremental` option together with `--readable`:
+
+```shell
+php artisan env:encrypt --readable --incremental --key=3UVsEgGVK36XN82KKeyLFMhvosbZN1aF
+```
+
+Laravel compares the values in your `.env` file with the decrypted values from the existing `.env.encrypted` file. Unchanged values keep their existing ciphertext, while new or changed values are encrypted. Variables removed from `.env` are also removed from the encrypted file. For example, changing only `DB_PASSWORD` changes only that variable's encrypted entry, making pull request diffs easier to review.
+
+The `--incremental` option allows updating the encrypted file without `--force`. If the encrypted file does not exist, Laravel creates it normally. If no entries have changed, the existing file is left untouched.
+
+When updating an existing file, use the same encryption key and cipher that were used to create it. The file must be in readable format, and Laravel will abort without overwriting it if an encrypted entry cannot be decrypted. To re-encrypt all values, such as when changing the encryption key, use `--readable --force` without `--incremental`.
+
 <a name="decryption"></a>
 #### Decryption
 
